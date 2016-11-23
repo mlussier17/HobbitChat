@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Chat</string>
+    <string name="hint_write">Message ... </string>
+    <string name="btn_send">Envoyer</string>
+    <string name="btn_configuration">Connection</string>
+    <string name="default_port">6000</string>
+    <string-array name="spinner_array">
+        <item>Comté</item>
+        <item>Mordor</item>
+        <item>Isengard</item>
+    </string-array>
+    <string name="username">Nom d\'usager</string>
+    <string name="hobbit">Hobbit</string>
+    <string name="title">Chat d\'hobbit</string>
+</resources>
