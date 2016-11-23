@@ -22,6 +22,7 @@ public class Communication extends AppCompatActivity {
     private Intent _intent;
     private RecepteurUpdates _getUpdates;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +34,7 @@ public class Communication extends AppCompatActivity {
         if (savedInstanceState == null) {
             strtService();
         }
+
         strtRecepteur();
     }
 
