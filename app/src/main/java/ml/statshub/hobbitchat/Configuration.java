@@ -1,6 +1,7 @@
 package ml.statshub.hobbitchat;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -61,7 +62,7 @@ public class Configuration extends AppCompatActivity {
         int validate = Integer.parseInt(port.getText().toString());
         if(validate > 1023 && validate < 65536) return true;
         else {
-            Toast.makeText(Configuration.this, R.string.error_port,Toast.LENGTH_SHORT);
+            Toast.makeText(Configuration.this, R.string.error_port,Toast.LENGTH_SHORT).show();
             return false;
         }
     }
@@ -70,7 +71,7 @@ public class Configuration extends AppCompatActivity {
         String validate = username.getText().toString();
         if(validate.length() >= 2 && validate.length() <= 8) return true;
         else {
-            Toast.makeText(Configuration.this,R.string.error_username,Toast.LENGTH_SHORT);
+            Toast.makeText(Configuration.this,R.string.error_username,Toast.LENGTH_SHORT).show();
             return false;
         }
     }

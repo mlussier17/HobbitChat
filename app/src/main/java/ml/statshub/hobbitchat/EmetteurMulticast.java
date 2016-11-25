@@ -6,8 +6,8 @@ import java.net.*;
  */
 
 public class EmetteurMulticast {
-    static final String GROUPE = "225.0.0.0";
-    static final int PORT = 10000;
+    static String GROUPE;
+    static int PORT;
     static final int DELAI = 2000;
 
     public void emettre(String chaine) {
@@ -35,7 +35,9 @@ public class EmetteurMulticast {
         }
     }
 
-    public static void main(String args[]) {
+    public static void main(String IP, int port) {
+        GROUPE = IP;
+        PORT = port;
         new EmetteurMulticast().emettre("Ceci est un message de multicast");
     }
 }

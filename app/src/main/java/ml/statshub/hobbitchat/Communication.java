@@ -70,9 +70,9 @@ public class Communication extends AppCompatActivity {
 
     public class RecepteurUpdates extends BroadcastReceiver {
         public void onReceive(Context context, Intent intent) {
-            String message = intent.getStringExtra("com.leemartinez.joaquin.MESSAGE");
+            //String message = intent.getStringExtra("com.leemartinez.joaquin.MESSAGE");
 
-            _tvMessages.setText("\n" + message);
+            _tvMessages.setText("\n" + "test");
         }
     }
 }

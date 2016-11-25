@@ -6,9 +6,9 @@ import java.net.*;
  */
 
 public class ReceveurMulticast {
-    static final String GROUPE = "225.0.0.0";
+    static String GROUPE;
     static final int LONG_TAMPON = 1024;
-    static final int PORT = 10000;
+    static int PORT;
 
     public void recevoir() {
         try {
@@ -42,7 +42,9 @@ public class ReceveurMulticast {
         }
     }
 
-    public static void main(String args[]) {
+    public static void main(String IP, int port) {
+        GROUPE = IP;
+        PORT = port;
         new ReceveurMulticast().recevoir();
     }
 }
