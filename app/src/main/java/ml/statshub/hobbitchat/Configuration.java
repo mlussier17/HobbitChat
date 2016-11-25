@@ -18,8 +18,6 @@ public class Configuration extends AppCompatActivity {
     private EditText username;
     private Spinner spinner;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
