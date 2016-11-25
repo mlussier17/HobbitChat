@@ -1,26 +1,29 @@
 package ml.statshub.hobbitchat;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
 
 public class Communication extends AppCompatActivity {
     // Constantes
-    private final String DEUX_POINT = " : ";
+    public final int LONG_TAMPON = 1024;
+    public final String DEUX_POINT = " : ";
 
     //Variables
     private String _user;
+    private int _port;
+    private String _ip;
     private EditText _edtMessage;
     private TextView _tvMessages;
-    private Intent _intent;
-    private RecepteurUpdates _getUpdates;
+    public Boolean _listening = false;
+    public InetAddress inetAdresseMulticast;
 
 
     @Override
@@ -31,22 +34,24 @@ public class Communication extends AppCompatActivity {
         _edtMessage = (EditText) findViewById(R.id.editText);
         _tvMessages = (TextView) findViewById(R.id.textView);
 
-        if (savedInstanceState == null) {
-            strtService();
-        }
+        // GET IP, port, username
+        getExtrasFromConfiguration();
 
-        strtRecepteur();
+        // TODO
+        // Receive other shits
+        String mess = null;
+        new ReceveurMulticast(_ip, _port).execute();
+
+        _tvMessages.append("\n" + _user + DEUX_POINT + mess);
     }
 
     public void sendMessage(View view) {
-        // TODO
-        // Send to other users
-
         if (_edtMessage.getText().length() > 0) {
-            if (_user == null) _user = "bob";
+            _tvMessages.append("\n" + _user + DEUX_POINT + _edtMessage.getText().toString());
+            // Send to other users
+            new EmetteurMulticast(_ip, _port, _user + " : " + _edtMessage.getText().toString()).execute();
 
-            _tvMessages.setText(_getUpdates.toString());
-            _tvMessages.append("\n" + _user + DEUX_POINT + _edtMessage.getText());
+            // Clear EditText
             _edtMessage.setText("");
             _edtMessage.setError(null);
         }
@@ -55,24 +60,94 @@ public class Communication extends AppCompatActivity {
         }
     }
 
-    private void strtService() {
-        _intent = new Intent(this, ServiceCommunication.class);
-        startService(_intent);
-
-        Toast.makeText(this, "Service starting", Toast.LENGTH_SHORT).show();
-    }
-    private void strtRecepteur() {
-        String filterName = "com.leemartinez.joaquin.CHAT";
-        IntentFilter filter = new IntentFilter(filterName);
-
-        _getUpdates = new RecepteurUpdates();
+    private void getExtrasFromConfiguration() {
+        // Get extras
+        Bundle bundle = getIntent().getExtras();
+        _ip = bundle.getString("IP");
+        _port = bundle.getInt("port");
+        _user = bundle.getString("username");
     }
 
-    public class RecepteurUpdates extends BroadcastReceiver {
-        public void onReceive(Context context, Intent intent) {
-            //String message = intent.getStringExtra("com.leemartinez.joaquin.MESSAGE");
 
-            _tvMessages.setText("\n" + "test");
+
+    public class ReceveurMulticast extends AsyncTask<Void, Void, Void> {
+        byte tampon[] = new byte[LONG_TAMPON];
+        MulticastSocket multicastSocketUDP;
+        String GROUPE;
+        int PORT;
+        DatagramPacket datagramPacket;
+
+        public ReceveurMulticast(String ip, int port) {
+            GROUPE = ip;
+            PORT = port;
+        }
+
+        @Override
+        protected void onPreExecute()
+        {
+            super.onPreExecute();
+            try
+            {
+                datagramPacket = new DatagramPacket(tampon, 0, LONG_TAMPON);
+                multicastSocketUDP = new MulticastSocket(_port);
+                multicastSocketUDP.joinGroup(inetAdresseMulticast);
+                _listening = true;
+            }
+            catch (Exception ex)
+            {
+                ex.getMessage();
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... args)
+        {
+            try
+            {
+                while (_listening)
+                {
+                    multicastSocketUDP.receive((datagramPacket));
+                    String chaine = new String(datagramPacket.getData(),datagramPacket.getOffset(), datagramPacket.getLength());
+                    publishProgress(chaine);
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.getMessage();
+                ex.printStackTrace();
+                System.exit(0);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... valeurs)
+        {
+            super.onProgressUpdate();
+            String message;
+            if (true/*checkBoxIp.isChecked()*/)
+            {
+                message = valeurs[0].substring(0, valeurs[0].indexOf(":")) + datagramPacket.getSocketAddress()+ ":"+valeurs[0].substring(valeurs[0].lastIndexOf(":") + 1);
+            }
+            else
+            {
+                message = valeurs[0];
+            }
+            _tvMessages.append(message + "\n");
+        }
+
+        @Override
+        protected void onPostExecute(Void resultat)
+        {
+            try
+            {
+                multicastSocketUDP.leaveGroup(inetAdresseMulticast);
+            }
+            catch (Exception ex)
+            {
+                ex.getMessage();
+            }
+            _listening = false;
         }
     }
 }
