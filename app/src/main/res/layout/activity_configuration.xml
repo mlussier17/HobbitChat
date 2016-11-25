@@ -27,6 +27,7 @@
         android:src="@drawable/hobbit"/>
 
     <EditText
+        android:id="@+id/username"
         android:layout_width="500dp"
         android:layout_height="wrap_content"
         android:maxLength="8"
@@ -49,6 +50,7 @@
         android:inputType="number"
         android:maxLength="5"
         android:textSize="25sp"
+        android:text="@string/default_port"
         android:hint="@string/default_port"
         android:layout_below="@id/hobbit"
         android:layout_alignParentEnd="true" />
