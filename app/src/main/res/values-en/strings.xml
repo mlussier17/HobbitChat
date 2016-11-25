@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Chat</string>
+    <string name="hint_write">Message ... </string>
+    <string name="btn_send">Send</string>
+    <string name="btn_configuration">Connexion</string>
+    <string name="username">Username</string>
+    <string name="title">Chat for hobbits</string>
+    <string name="error_port">The port is not between 1024 and 65 535</string>
+    <string name="error_username">The username needs to have between 2 and 8 characters</string>
+</resources>

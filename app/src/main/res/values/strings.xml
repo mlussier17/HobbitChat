@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Chat</string>
+    <string name="app_name">Clavardage</string>
     <string name="hint_write">Message ... </string>
     <string name="btn_send">Envoyer</string>
     <string name="btn_configuration">Connection</string>
@@ -11,7 +12,7 @@
     </string-array>
     <string name="username">Nom d\'usager</string>
     <string name="hobbit">Hobbit</string>
-    <string name="title">Chat d\'hobbit</string>
+    <string name="title">Clavardage d\'hobbit</string>
     <string name="error_port">Le port n\'est pas entre 1024 et 65 535</string>
     <string name="error_username">L\'usager doit contenir entre 2 et 8 caractères</string>
 </resources>
