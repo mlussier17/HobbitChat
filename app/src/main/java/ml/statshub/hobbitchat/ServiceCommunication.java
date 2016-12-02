@@ -22,13 +22,13 @@ public class ServiceCommunication extends IntentService {
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
             // Le paramètre est le nom de l'action
-            Intent intentLocal = new Intent("com.leemartinez.joaquin.CHAT");
+            Intent intentLocal = new Intent("ml.statshub.hobbitchat.CHAT");
 
             // Traitement (ici seulement un compteur pour simuler un
             // traitement)
             for (int i = 0; i < 50; i++) {
                 String message = "N = " + i;
-                intentLocal.putExtra("com.leemartinez.joaquin.MESSAGE", message);
+                intentLocal.putExtra("ml.statshub.hobbitchat.MESSAGE", message);
 
                 // Diffuse l'objet Intent avec ses données
                 LocalBroadcastManager.getInstance(this).sendBroadcast(intentLocal);

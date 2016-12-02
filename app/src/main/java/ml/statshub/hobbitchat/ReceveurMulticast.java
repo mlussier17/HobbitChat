@@ -7,7 +7,7 @@ import java.net.*;
  * Created by 201327549 on 2016-11-18.
  */
 
-/*public class ReceveurMulticast extends AsyncTask<Void, Void, Void> {
+public class ReceveurMulticast extends AsyncTask<Void, Void, Void> {
     static String GROUPE;
     static final int LONG_TAMPON = 1024;
     static int PORT;
@@ -57,4 +57,4 @@ import java.net.*;
             publishProgress();
         }
     }
-}*/
+}

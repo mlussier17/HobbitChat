@@ -1,2 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">Charlar</string>
+    <string name="hint_write">Mensajes ... </string>
+    <string name="btn_send">Enviar</string>
+    <string name="btn_configuration">Conexion</string>
+    <string-array name="spinner_array">
+        <item>Comté</item>
+        <item>Mordor</item>
+        <item>Isengard</item>
+    </string-array>
+    <string name="username">Nombre de usuario</string>
+    <string name="title">Charlar de hobbit</string>
+    <string name="error_port">El puerto no está entre 1024 y 65 535</string>
+    <string name="error_username">Usuario debe estar entre 2 y 8 letras</string>
+    <string name="message">Mensajes \:</string>
+</resources>

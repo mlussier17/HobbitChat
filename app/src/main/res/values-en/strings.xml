@@ -2,7 +2,7 @@
     <string name="app_name">Chat</string>
     <string name="hint_write">Message ... </string>
     <string name="btn_send">Send</string>
-    <string name="btn_configuration">Connexion</string>
+    <string name="btn_configuration">Connection</string>
     <string name="default_port">6000</string>
     <string-array name="spinner_array">
         <item>Comté</item>

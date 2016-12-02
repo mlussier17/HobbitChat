@@ -3,10 +3,14 @@ package ml.statshub.hobbitchat;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.PhoneNumberUtils;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -22,34 +26,60 @@ public class Communication extends AppCompatActivity {
     private String _ip;
     private EditText _edtMessage;
     private TextView _tvMessages;
-    public Boolean _listening = false;
+    private ReceveurMulticast receiver;
+
     public InetAddress inetAdresseMulticast;
+    public CheckBox choice;
+
+    public String _autreUser;
+    public String _chaine;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_communication);
+        choice = (CheckBox)findViewById(R.id.choice);
 
         _edtMessage = (EditText) findViewById(R.id.editText);
         _tvMessages = (TextView) findViewById(R.id.textView);
-
+        _tvMessages.setMovementMethod(new ScrollingMovementMethod());
         // GET IP, port, username
         getExtrasFromConfiguration();
 
         // TODO
         // Receive other shits
         String mess = null;
-        new ReceveurMulticast(_ip, _port).execute();
+        receiver = new ReceveurMulticast(_ip, _port);
+        receiver.execute();
 
-        _tvMessages.append("\n" + _user + DEUX_POINT + mess);
+        _tvMessages.append("\n");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        receiver.cancel();
     }
 
     public void sendMessage(View view) {
         if (_edtMessage.getText().length() > 0) {
-            _tvMessages.append("\n" + _user + DEUX_POINT + _edtMessage.getText().toString());
+            //_tvMessages.append(_user + DEUX_POINT + _edtMessage.getText().toString() + "\n");
             // Send to other users
-            new EmetteurMulticast(_ip, _port, _user + " : " + _edtMessage.getText().toString()).execute();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    String chaine = _user+ ":" + _edtMessage.getText().toString();
+                    byte tampon[] = chaine.getBytes();
+                    DatagramPacket paquet = new DatagramPacket(tampon, 0, tampon.length, inetAdresseMulticast, _port);
+                    try {
+                        MulticastSocket socket = new MulticastSocket();
+                        socket.send(paquet);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
 
             // Clear EditText
             _edtMessage.setText("");
@@ -70,9 +100,10 @@ public class Communication extends AppCompatActivity {
 
 
 
-    public class ReceveurMulticast extends AsyncTask<Void, Void, Void> {
+    public class ReceveurMulticast extends AsyncTask<Void, String, Void> {
         byte tampon[] = new byte[LONG_TAMPON];
         MulticastSocket multicastSocketUDP;
+        private Boolean _listening = false;
         String GROUPE;
         int PORT;
         DatagramPacket datagramPacket;
@@ -83,36 +114,33 @@ public class Communication extends AppCompatActivity {
         }
 
         @Override
-        protected void onPreExecute()
-        {
+        protected void onPreExecute() {
             super.onPreExecute();
-            try
-            {
+            try {
+                inetAdresseMulticast = InetAddress.getByName(GROUPE);
                 datagramPacket = new DatagramPacket(tampon, 0, LONG_TAMPON);
                 multicastSocketUDP = new MulticastSocket(_port);
                 multicastSocketUDP.joinGroup(inetAdresseMulticast);
                 _listening = true;
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 ex.getMessage();
             }
         }
 
         @Override
-        protected Void doInBackground(Void... args)
-        {
+        protected Void doInBackground(Void... args) {
             try
             {
-                while (_listening)
-                {
+                while (_listening) {
                     multicastSocketUDP.receive((datagramPacket));
-                    String chaine = new String(datagramPacket.getData(),datagramPacket.getOffset(), datagramPacket.getLength());
-                    publishProgress(chaine);
+                    _chaine = new String(datagramPacket.getData(),datagramPacket.getOffset(), datagramPacket.getLength());
+                    _autreUser = datagramPacket.getSocketAddress().toString();
+                    _autreUser = _autreUser.substring(1,_autreUser.indexOf(":"));
+                    publishProgress(_chaine);
                 }
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 ex.getMessage();
                 ex.printStackTrace();
                 System.exit(0);
@@ -121,32 +149,34 @@ public class Communication extends AppCompatActivity {
         }
 
         @Override
-        protected void onProgressUpdate(String... valeurs)
-        {
+        protected void onProgressUpdate(String... valeurs) {
             super.onProgressUpdate();
-            String message;
-            if (true/*checkBoxIp.isChecked()*/)
-            {
-                message = valeurs[0].substring(0, valeurs[0].indexOf(":")) + datagramPacket.getSocketAddress()+ ":"+valeurs[0].substring(valeurs[0].lastIndexOf(":") + 1);
+
+            if (choice.isChecked()) {
+                choice.setText(R.string.username);
+                int deleteUser = _chaine.indexOf(":");
+                String message = _chaine.substring(deleteUser, _chaine.length());
+
+                _tvMessages.append(_autreUser + message + "\n");
             }
-            else
-            {
-                message = valeurs[0];
+            else {
+                choice.setText(R.string.IP);
+                _chaine = valeurs[0];
+                _tvMessages.append(_chaine + "\n");
             }
-            _tvMessages.append(message + "\n");
         }
 
         @Override
-        protected void onPostExecute(Void resultat)
-        {
-            try
-            {
+        protected void onPostExecute(Void resultat) {
+            try {
                 multicastSocketUDP.leaveGroup(inetAdresseMulticast);
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 ex.getMessage();
             }
+
+        }
+        public void cancel(){
             _listening = false;
         }
     }
